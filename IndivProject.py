@@ -3,7 +3,28 @@
 Created on Fri May 18 08:49:11 2018
 
 @author: Joy Nwarueze
+
+This is a python script that adds random rectangles of various sizes and
+locations to a region specified by the user. Each new rectangle appears as 
+green then changes to gray when integrated into the total coverage area.
+
+Note:
+    Because of ImageDraw, you'll notice that the axes are slightly shifted
+     - You'll see a coordinate that looks like (6.5, 3.5) for example, that's because
+     ImageDraw draws by pixel rather than exact values. In other words - Round down 
+     where you think the coordinate is unless it's showing below 0 (another problem with ImageDraw)
+     because in that case round up
+
+Terminology that might be unclear:
+    region - its the plot image of size X by Y. Think of it as the background without the rectangles 
+    
+    plot - its the grid that the plot image is using. Plot is attached to region
+    so it can manipulate it
+    
+    superset - Its the accumulated tower coverage (after trimming where necessary)
+    
 """
+import PIL
 from PIL import Image, ImageDraw, ImageColor
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,11 +38,16 @@ global area_Covered
 global num_Figures
 
 def main():
-    print 'hello world'
+    '''
+    This function just takes in valid user input
+    
+    @return X,Y: int - The length (X) and width (Y) of the region
+    '''
+    #print 'hello world'
     while True:
         try:
             X,Y = input(
-                    "How large do you want your region to be? (X,Y) in integers, however to plot correctly these conditions apply, X >=4 and Y >=5: \n")
+                    "How large do you want your region to be? (X, Y) in integers, however to plot correctly these conditions apply, X (length) >=4 and Y (width) >=5: \n")
             assert isinstance(X,int) and isinstance(Y, int) and (X >=4) and (Y>=5)
         except ValueError:
            print("Sorry, I didn't understand that.")
@@ -36,15 +62,26 @@ def main():
 def getRegion(X, Y):
     '''
     Builds the starting region
+    
+    @param X,Y: int - The length (X) and width (Y) of the region
+    @return region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     '''
     #print "Building Region"
+    assert isinstance(X,int) and isinstance(Y, int) and (X >=4) and (Y>=5)
     region = Image.new('RGB', (X,Y), (255,255,255))  
+    assert isinstance(region, PIL.Image.Image)
     return region
 
 def get_rect(region, X, Y):
     '''
-    creates a new tower with coords, draws it and returns the tower
+    Creates a new tower (in the form of a rectangle) with random coords, draws it (but doesn't plot it) and returns the tower
+    
+    @param X,Y:  int - The length (X) and width (Y) of the region
+    @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
+    @return t: Tower instance - returns a tower of a random size and specified index
     '''
+    assert isinstance(region, PIL.Image.Image)
+    assert isinstance(X,int) and isinstance(Y, int) and (X >=4) and (Y>=5)
     global count
     #plt.figure(2)
     draw = ImageDraw.Draw(region)
@@ -67,7 +104,10 @@ def get_rect(region, X, Y):
     
 def add_Rect_To_Total(rect, region):
     '''
-    adds newest (and if necessary trimmed) rectangle to superset
+    Adds newest (and if necessary trimmed) rectangle to superset
+    
+    @param rect: Tower - instance of a Tower class
+    @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     '''
     global superset
     print 'adding rect to superset'
@@ -81,9 +121,18 @@ def add_Rect_To_Total(rect, region):
     draw.rectangle(rect.get_Tower_Coords(), fillcolor)
     return
     
+
+
 def trim_Current_Rect(rect, check_Rect, region):
     '''
-    Trims newest addition rectangle
+    Trims newest addition rectangle when there is an overlap or completely encompassed by superset coverage.
+    Where edge comparisons are made to determine where to trim
+    
+    @param rect: Tower - instance of a Tower class
+    @param check_Rect: Tower - instance of a Tower class found in superset to compare against
+    @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
+    
+    @return trimmed_Rect: Tower - It's the input rectangle but scaled back along specific edges
     '''
     print "Trimming a rect"
     print "index of rectangle violated: {0}".format(check_Rect.get_Index())
@@ -131,7 +180,7 @@ def trim_Current_Rect(rect, check_Rect, region):
         print 'only horiz trim made'
         trimmed_Rect = htrimmed_Rect
     else:
-        print 'should not be here? might be completely encompassed'
+        print '^^^might be completely encompassed^^^'
         print 'So turn it into a rect with no length or width'
         trimmed_Rect = Tower.Tower(rect.xone, rect.yone, rect.xone, rect.yone)
         trimmed_Rect.set_Index(vcopy_Rect.get_Index())
@@ -139,7 +188,22 @@ def trim_Current_Rect(rect, check_Rect, region):
     show_Plot(region)
     return trimmed_Rect
 
+
+
+
+
 def trim_Horiz_Overlap(rect, check_Rect, left_Violated, right_Violated):
+    '''
+    Helper function for trim_Current_Rect: Trims a rectangle horizontally and returns it
+    
+    @param rect:  Tower - instance of a Tower class
+    @param check_Rect: Tower - instance of a Tower class found in superset to compare against
+    @param left_Violated, right_Violated: Boolean - True when that spefic edge of the check_Rect is violated
+    
+    @return rect: Tower - instance of a Tower class but trimmed along the opposite violated edge
+     --> left_violation of check_Rect means scale back right side of rect
+    
+    '''
     print 'Trimming Horizontally'
     if (right_Violated and left_Violated):
         vertical_Delta = rect.yone-rect.yzero
@@ -164,6 +228,16 @@ def trim_Horiz_Overlap(rect, check_Rect, left_Violated, right_Violated):
     return rect#htrim_Area,htrimmed_Rect
 
 def trim_Vertical_Overlap(rect, check_Rect, top_Violated, bot_Violated):
+    '''
+    Helper function for trim_Current_Rect: Trims a rectangle vertically and returns it
+    
+    @param rect:  Tower - instance of a Tower class
+    @param check_Rect: Tower - instance of a Tower class found in superset to compare against
+    @param top_Violated, bot_Violated: Boolean - True when that spefic edge of the check_Rect is violated
+    
+    @return rect: Tower - instance of a Tower class but trimmed along the opposite violated edge
+     --> top_violation of check_Rect means scale back bottom side of rect
+    '''
     if (top_Violated and bot_Violated):
         horiz_Delta = rect.xone-rect.xzero
         top_Delta = rect.yone - check_Rect.yone
@@ -186,7 +260,13 @@ def trim_Vertical_Overlap(rect, check_Rect, top_Violated, bot_Violated):
     
 def check_For_Overlap(rect, region):
     '''
-    if there is a horizontal AND vertical overlap
+    Checks if there is a horizontal AND vertical overlap meaning the rectangle overlaps another
+    superset rectangle
+    
+    @param rect:  Tower - instance of a Tower class
+    @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
+    
+    @return rect: Tower - Either the trimmed version of the rectangle if an overlap was found, or the original rectangle
     '''
     index = 0
     collisions = 0
