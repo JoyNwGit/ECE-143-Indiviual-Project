@@ -11,15 +11,16 @@ class Tower:
     
     def __init__(self, xzero, yzero, xone, yone):
         #instance variables
-        print 'hello world, I am a tower'
+        #print 'hello world, I am a tower'
         self.xzero = xzero
         self.yzero = yzero
         self.xone = xone
         self.yone = yone
+        
         self.xright = xone
-        self.xleft = xone - (xone-xzero)
+        self.xleft = xzero
         self.ytop = yone
-        self.ybot = yone - (yone - yzero)
+        self.ybot = yzero
         
     def get_Tower_Coords(self):
         coord = (self.xzero, self.yzero), (self.xone, self.yone)
