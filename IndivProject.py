@@ -83,6 +83,7 @@ def get_rect(region, X, Y):
     assert isinstance(region, PIL.Image.Image)
     assert isinstance(X,int) and isinstance(Y, int) and (X >=4) and (Y>=5)
     global count
+    assert isinstance(count, int)
     #plt.figure(2)
     draw = ImageDraw.Draw(region)
     print "Adding Rectangle"
@@ -109,7 +110,9 @@ def add_Rect_To_Total(rect, region):
     @param rect: Tower - instance of a Tower class
     @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     '''
+    assert isinstance(region, PIL.Image.Image)
     global superset
+    assert isinstance(superset, dict)
     print 'adding rect to superset'
     #plt.figure(num_Figures) #3
     superset[str(rect.get_Index())] = rect
@@ -134,6 +137,7 @@ def trim_Current_Rect(rect, check_Rect, region):
     
     @return trimmed_Rect: Tower - It's the input rectangle but scaled back along specific edges
     '''
+    assert isinstance(region, PIL.Image.Image)
     print "Trimming a rect"
     print "index of rectangle violated: {0}".format(check_Rect.get_Index())
     top_Violated = False
@@ -204,6 +208,7 @@ def trim_Horiz_Overlap(rect, check_Rect, left_Violated, right_Violated):
      --> left_violation of check_Rect means scale back right side of rect
     
     '''
+    assert isinstance(left_Violated, bool) and isinstance(right_Violated, bool)
     print 'Trimming Horizontally'
     if (right_Violated and left_Violated):
         vertical_Delta = rect.yone-rect.yzero
@@ -238,6 +243,7 @@ def trim_Vertical_Overlap(rect, check_Rect, top_Violated, bot_Violated):
     @return rect: Tower - instance of a Tower class but trimmed along the opposite violated edge
      --> top_violation of check_Rect means scale back bottom side of rect
     '''
+    assert isinstance(top_Violated, bool) and isinstance(bot_Violated, bool)
     if (top_Violated and bot_Violated):
         horiz_Delta = rect.xone-rect.xzero
         top_Delta = rect.yone - check_Rect.yone
@@ -256,7 +262,7 @@ def trim_Vertical_Overlap(rect, check_Rect, top_Violated, bot_Violated):
     elif (bot_Violated):
         print 'check rect has bot violated - scale back rect top'
         rect.yone = check_Rect.yzero
-    return rect#vtrim_Area,vtrimmed_Rect
+    return rect
     
 def check_For_Overlap(rect, region):
     '''
@@ -268,6 +274,7 @@ def check_For_Overlap(rect, region):
     
     @return rect: Tower - Either the trimmed version of the rectangle if an overlap was found, or the original rectangle
     '''
+    assert isinstance(region, PIL.Image.Image)
     index = 0
     collisions = 0
     while index < len(superset):
@@ -283,10 +290,19 @@ def check_For_Overlap(rect, region):
             collisions+=1
             print "num of collisions detected is now {0}".format(collisions)
             print "The rectangle is touching the superset"
-            rect = trim_Current_Rect(rect, check_Rect, region) #assume trimmed in that location
+            recolor_Rect_White(rect, region)
+            rect = trim_Current_Rect(rect, check_Rect, region) #returns trimmed Rect area
+            recolor_Trimmed_Rect_Green(rect, region)
+            recolor_check_Rect_Gray(check_Rect, region)
     return rect
    
 def show_Plot(region):
+    '''
+    Plots the region with the drawn rectangles on a new figure window. Called when the final output needs to be seen
+    
+    @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
+    '''
+    assert isinstance(region, PIL.Image.Image)
     global num_Figures
     plot = np.asarray(region)
     plt.figure(num_Figures)
@@ -294,6 +310,26 @@ def show_Plot(region):
     num_Figures +=1
     return
     
+def recolor_Rect_White(rect, region):
+    '''
+    Once rect overlaps check_Rect, whiteout rect, then recolor in the trimmed rect
+    '''
+    print 'Whiting out newest rectangle'
+    return
+
+def recolor_Trimmed_Rect_Green(trimmed_Rect, region):
+    '''
+    Recolors the trimmed Rect green 
+    '''
+    print 'coloring in trimmed rect'
+    return
+
+def recolor_check_Rect_Gray(check_Rect, region):
+    '''
+    Recolors the overlapped rect to gray
+    '''
+    print 'coloring in the overlapped rect'
+    return 
 
 if __name__ == "__main__":
     #TODO - remember to add () to end of functions
@@ -311,7 +347,7 @@ if __name__ == "__main__":
     area_Remaining = X*Y
     show_Plot(region)
     #start filling with rectangles
-    i = 0 #run 10 times 
+    i = 0 #run n times. Less than 10 for DEBUG 
     while (i<5 and area_Remaining >0):
         i +=1
         rect = get_rect(region, X, Y)
@@ -320,7 +356,6 @@ if __name__ == "__main__":
         if (rect.get_Index() == 0):      
             add_Rect_To_Total(rect, region)
         else:
-            #print 'checking index {0} rect for overlap'.format(rect.get_Index())
             rect = check_For_Overlap(rect, region)   
             add_Rect_To_Total(rect, region)
         show_Plot(region)
