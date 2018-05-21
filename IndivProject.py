@@ -8,6 +8,11 @@ from PIL import Image, ImageDraw, ImageColor
 import matplotlib.pyplot as plt
 import numpy as np
 import random as rand
+import Tower
+
+global superset
+global count
+
 def main():
     print 'hello world'
     while True:
@@ -27,8 +32,7 @@ def main():
     
 def getRegion(X, Y):
     '''
-    Does all the heavy lifting while it passes data to helper functions 
-    to make measurements
+    Builds the starting region
     '''
     print "Building Region"
     region = Image.new('RGB', (X,Y), (255,255,255))
@@ -41,30 +45,70 @@ def getRegion(X, Y):
     return region
 
 def get_rect(region, X, Y):
+    '''
+    creates a new tower with coords, draws it and returns the tower
+    '''
+    global count
     plt.figure(2)
     draw = ImageDraw.Draw(region)
     print "Adding Rectangle"
-    fillcolor = ImageColor.getcolor("yellow", "RGB")
-    outline = ImageColor.getcolor("gold", "RGB")
+ 
+    fillcolor = ImageColor.getcolor("lightgreen", "RGB")
     xzero = rand.randint(0, X-1)
     yzero = rand.randint(0, Y-1)
     xone = rand.randint(xzero+1, X)
     yone = rand.randint(yzero+1, Y)
     print "Your rectangle coords are ({0},{1}) to ({2},{3})".format(xzero,yzero,xone,yone) 
-    draw.rectangle(((xzero,yzero),(xone,yone)), fillcolor)
-    plot = np.asarray(region)
-    plt.imshow(plot) 
+    t = Tower.Tower(xzero, yzero,xone,yone)
+    if (t.get_Index() == -1):
+        t.set_Index(count)
+        print 'tower index is {0}'.format(t.get_Index())
+    count += 1
+    draw.rectangle(t.get_Tower_Coords(), fillcolor)
+
+    return t
+    #plot = np.asarray(region)
+    #plt.imshow(plot) 
     
-def add_Rect_To_SuperRect(num, sub_Area, xzero, yzero, xone, yone):
+    
+def add_Rect_To_Total(rect, region):
+    '''
+    adds newest (and if necessary trimmed) rectangle to superset
+    '''
+    print 'adding rect to superset'
+    plt.figure(3)
+    superset[str(rect.get_Index())] = rect
+    #print superset
+    fillcolor = ImageColor.getcolor("gray", "RGB")
+    draw = ImageDraw.Draw(region)
+    draw.rectangle(rect.get_Tower_Coords(), fillcolor)
     return
     
-def trim_Current_Rect(xzero,yzero, xone, yone):
+def trim_Current_Rect(rect):
+    '''
+    Trims newest addition rectangle
+    '''
     return
     
+def check_For_Overlap(rect):
+    return
    
     
 
 if __name__ == "__main__":
     X,Y = main()
+    global count
+    count = 0
+    superset = {}
     region = getRegion(X,Y)
-    get_rect(region, X, Y)
+    rect = get_rect(region, X, Y)
+    #rect.get_Tower_Area()
+    plot = np.asarray(region)
+    plt.imshow(plot)
+    if (rect.get_Index() == 0):
+        add_Rect_To_Total(rect, region)
+    print count
+    plot = np.asarray(region)
+    plt.imshow(plot) 
+    
+    
