@@ -134,6 +134,7 @@ def trim_Current_Rect(rect, check_Rect, region):
         print 'should not be here? might be completely encompassed'
         print 'So turn it into a rect with no length or width'
         trimmed_Rect = Tower.Tower(rect.xone, rect.yone, rect.xone, rect.yone)
+        trimmed_Rect.set_Index(vcopy_Rect.get_Index())
         
     show_Plot(region)
     return trimmed_Rect
@@ -236,17 +237,15 @@ if __name__ == "__main__":
         rect = get_rect(region, X, Y)
         # plot of before added to superset
         show_Plot(region)
-        if (rect.get_Index() == 0):
-            
+        if (rect.get_Index() == 0):      
             add_Rect_To_Total(rect, region)
         else:
-            rect = check_For_Overlap(rect, region)
-            
+            #print 'checking index {0} rect for overlap'.format(rect.get_Index())
+            rect = check_For_Overlap(rect, region)   
             add_Rect_To_Total(rect, region)
         show_Plot(region)
         area_Remaining = area_Remaining - rect.get_Tower_Area()
         area_Covered += rect.get_Tower_Area()   
         print 'current number of rectangles: {0}'.format(count)
-        
     
     
