@@ -310,9 +310,10 @@ def show_Plot(region):
     assert isinstance(region, PIL.Image.Image), "Critical Error - Region meant to pass as a PIL.Image.Image instance"
     global num_Figures
     plot = np.asarray(region)
+    plt.cla()
     plt.figure(num_Figures)
     plt.imshow(plot) 
-    num_Figures +=1
+    #num_Figures +=1
     return
     
 def recolor_Rect_White(rect, region):
@@ -386,7 +387,7 @@ if __name__ == "__main__":
     total_Area = X*Y
     percent_Covered = 0
     plt.close('all')
-    print "Percentage of region covered: {0}".format(percent_Covered)
+    print "Percentage of region covered: {0}%".format(percent_Covered)
     show_Plot(region)
     #start filling with rectangles
     i = 0 #run n times. Less than 10 for DEBUG 
