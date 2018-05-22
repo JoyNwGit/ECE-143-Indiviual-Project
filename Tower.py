@@ -31,7 +31,7 @@ class Tower:
         @param xone: int - The ending x coordinate
         @param yone: int - The ending y coordinate
         '''
-        assert isinstance(xzero, int) and isinstance(yzero, int) and isinstance(xone, int) and isinstance(yone, int)
+        assert isinstance(xzero, int) and isinstance(yzero, int) and isinstance(xone, int) and isinstance(yone, int), "One or more of the coordinates was not an int"
         self.xzero = xzero
         self.yzero = yzero
         self.xone = xone
@@ -51,7 +51,7 @@ class Tower:
         end points (xone, yone) of the tower rectangle
         '''
         coord = (self.xzero, self.yzero), (self.xone, self.yone)
-        assert isinstance(coord, tuple)
+        assert isinstance(coord, tuple), "Critical Error - Coordinate meant to pass as a tuple"
         return coord
     
     def get_Tower_Area(self):
@@ -63,7 +63,7 @@ class Tower:
         xdelta = self.xone-self.xzero
         ydelta = self.yone-self.yzero
         area = xdelta*ydelta
-        assert isinstance(area, int)
+        assert isinstance(area, int), "Critical Error - area meant to pass as an int"
         return area
     
     def get_Index(self):
@@ -75,7 +75,7 @@ class Tower:
         
         @return self.index: int - The tower's index value in terms of order created
         '''
-        assert isinstance(self.index, int)
+        assert isinstance(self.index, int), "Critical Error - self.index meant to pass as an int"
         return self.index
     
     def set_Index(self, index):
@@ -85,5 +85,5 @@ class Tower:
         
         @param index: int - The index value to set the tower's index in superset of rectangle/towers dictionary
         '''
-        assert isinstance(self.index, int)
+        assert isinstance(self.index, int), "Critical Error - self.index meant to pass as an int"
         self.index = index

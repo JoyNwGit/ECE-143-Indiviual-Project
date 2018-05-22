@@ -1,7 +1,10 @@
 ### ECE-143-Indiviual-Project
 [How to use markdown, remember to remove](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 README file for individual project
-Update the following:
+
+Author: Joy Nwarueze
+Electrical Engineer Undergraduate
+
 #### discussions on the problem:
 This is what I took away from reading the prompt: 
 
@@ -45,6 +48,8 @@ Limitations of ImageDraw:
     The X range can actually be sized under 4 units and Y range under 5 units, however the background image plot gets weird. What I mean is that by using ImageDraw rectangles would show up in the negatives even though their coordinates specified that they are above 0. 
 - Pixels:
     The coordinates don't align neatly with the plot axis because ImageDraw works by pixels rather than exact integer values. This could lead to a lot of misunderstanding when viewing the plot trimming a rectangle. You'll see that after a trim, the plot will still show a little overlap before being added to the superset of towers. However it has been trimmed correctly, it's just not as good at showing it. Also, when towers look like they clearly overlap on the plot and then don't trim are actually not overlapped. That caused me a lot of stress redrawing the plot by hand of the 2 conflicting or non-conflicting rectangles and wondering what in the world is happening. In short, ImageDraw may not be the best source when it comes to precision images. If I could convert from ImageDraw to Numpy, I'm certain it would look a lot more accurate. And I could add outlines that aren't an affront to the eyes.
+- Trimming:
+    Each trimming shown consequetively based on collision detection order. So you might see a polygon rather than a rectangle, but rest assured it's not finished trimming until its grayed in. 
    
 
 
@@ -64,7 +69,13 @@ Here is a list of Steps that I used to solve this problems in consideration of t
 - Step 4,5: Trim overlapped rectangles. Maybe make a dummy rectangle or use the superset rectangles (the one I went with)
 - Step 4.5: Detect overlaps and how many overlaps (Took 1 full day - By far the most difficult part)
 - Step 5: Actually trim a Rectangle. (This is where the aggressive amounts of handwritten plotting and double-checking everything went into. Many comparisons were added at this step based on what I could write down and understand. The "New rectangle completely encompassed by superset" was the rarest and most confusing condition to address.
-- Step 6: When to actually draw each rectangle and show it. At this point I had a 
+- Step 6: When to actually draw each rectangle and show it. At this point I had too many "show plot" sequence of codes scattered around my code. I created one method for that and retroactively removed some of the previous sequences to avoid getting duplicate plots. So many duplicate plots... Python yelled at me for having to many....
+- Step 7: Progress bar. I wasn't going to plot an actual bar because I don't have time for that but then again it might be really simple. However I think simple print statements keep things from being too cluttered.
+Step 8: Stop coding and document/populate info. I still did some coding to fix the imaging but today (5/21/18) was dedicating to documentation.
 
 #### good visualizations:
  - Are my plots good? No outlines for the rectangles unfortunately, ImageDraw makes it look weird.
+ 
+ 
+## Conclusion:
+I hope this was a helpful read on how I thought through this problem. It might not have been clear but a main focus on mine was modularization and clarity of code. A recent coding project I worked on made me realize how unclear my variables look to someone who has no clue what my code is meant to do. I'm still practicing and I feel in the future, actually planning out my starting variable names might help me get in the right mindset.  

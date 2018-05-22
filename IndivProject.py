@@ -74,9 +74,9 @@ def getRegion(X, Y):
     @return region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     '''
     #print "Building Region"
-    assert isinstance(X,int) and isinstance(Y, int) and (X >=4) and (Y>=5)
+    assert isinstance(X,int) and isinstance(Y, int) and (X >=4) and (Y>=5), "One or more of the coordinates was not an int"
     region = Image.new('RGB', (X,Y), (255,255,255))  
-    assert isinstance(region, PIL.Image.Image)
+    assert isinstance(region, PIL.Image.Image), "Critical Error - Region meant to pass as a PIL.Image.Image instance"
     return region
 
 def get_rect(region, X, Y):
@@ -87,10 +87,10 @@ def get_rect(region, X, Y):
     @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     @return t: Tower instance - returns a tower of a random size and specified index
     '''
-    assert isinstance(region, PIL.Image.Image)
-    assert isinstance(X,int) and isinstance(Y, int) and (X >=4) and (Y>=5)
+    assert isinstance(region, PIL.Image.Image), "Critical Error - Region meant to pass as a PIL.Image.Image instance"
+    assert isinstance(X,int) and isinstance(Y, int) and (X >=4) and (Y>=5), "One or more of the coordinates was not an int"
     global count
-    assert isinstance(count, int)
+    assert isinstance(count, int), "Critical Error - Count meant to be an integer"
     #plt.figure(2)
     draw = ImageDraw.Draw(region)
     #print "Adding Rectangle"
@@ -117,9 +117,9 @@ def add_Rect_To_Total(rect, region):
     @param rect: Tower - instance of a Tower class
     @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     '''
-    assert isinstance(region, PIL.Image.Image)
+    assert isinstance(region, PIL.Image.Image), "Critical Error - Region meant to pass as a PIL.Image.Image instance"
     global superset
-    assert isinstance(superset, dict)
+    assert isinstance(superset, dict), "Critical Error - superset meant to be a dict that stores info"
     #print 'adding rect to superset'
     #plt.figure(num_Figures) #3
     superset[str(rect.get_Index())] = rect
@@ -144,7 +144,7 @@ def trim_Current_Rect(rect, check_Rect, region):
     
     @return trimmed_Rect: Tower - It's the input rectangle but scaled back along specific edges
     '''
-    assert isinstance(region, PIL.Image.Image)
+    assert isinstance(region, PIL.Image.Image), "Critical Error - Region meant to pass as a PIL.Image.Image instance"
     #print "Trimming a rect"
     #print "index of rectangle violated: {0}".format(check_Rect.get_Index())
     top_Violated = False
@@ -215,7 +215,7 @@ def trim_Horiz_Overlap(rect, check_Rect, left_Violated, right_Violated):
      --> left_violation of check_Rect means scale back right side of rect
     
     '''
-    assert isinstance(left_Violated, bool) and isinstance(right_Violated, bool)
+    assert isinstance(left_Violated, bool) and isinstance(right_Violated, bool), "Violations are meant to be Boolean"
     #print 'Trimming Horizontally'
     if (right_Violated and left_Violated):
         vertical_Delta = rect.yone-rect.yzero
@@ -248,7 +248,7 @@ def trim_Vertical_Overlap(rect, check_Rect, top_Violated, bot_Violated):
     @return rect: Tower - instance of a Tower class but trimmed along the opposite violated edge
      --> top_violation of check_Rect means scale back bottom side of rect
     '''
-    assert isinstance(top_Violated, bool) and isinstance(bot_Violated, bool)
+    assert isinstance(top_Violated, bool) and isinstance(bot_Violated, bool), "Violations are meant to be Boolean"
     if (top_Violated and bot_Violated):
         horiz_Delta = rect.xone-rect.xzero
         top_Delta = rect.yone - check_Rect.yone
@@ -279,7 +279,7 @@ def check_For_Overlap(rect, region):
     
     @return rect: Tower - Either the trimmed version of the rectangle if an overlap was found, or the original rectangle
     '''
-    assert isinstance(region, PIL.Image.Image)
+    assert isinstance(region, PIL.Image.Image), "Critical Error - Region meant to pass as a PIL.Image.Image instance"
     index = 0
     collisions = 0
     while index < len(superset):
@@ -307,7 +307,7 @@ def show_Plot(region):
     
     @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     '''
-    assert isinstance(region, PIL.Image.Image)
+    assert isinstance(region, PIL.Image.Image), "Critical Error - Region meant to pass as a PIL.Image.Image instance"
     global num_Figures
     plot = np.asarray(region)
     plt.figure(num_Figures)
@@ -325,7 +325,7 @@ def recolor_Rect_White(rect, region):
     @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     '''
     #print 'Whiting out newest rectangle'
-    assert isinstance(region, PIL.Image.Image)
+    assert isinstance(region, PIL.Image.Image), "Critical Error - Region meant to pass as a PIL.Image.Image instance"
     draw = ImageDraw.Draw(region)
     fillcolor = ImageColor.getcolor("white", "RGB")
     draw.rectangle(rect.get_Tower_Coords(), fillcolor)
@@ -339,7 +339,7 @@ def recolor_Trimmed_Rect_Green(trimmed_Rect, region):
     @param trimmed_Rect:  Tower - The trimmed version of the overlapping rectangle
     @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     '''
-    assert isinstance(region, PIL.Image.Image)
+    assert isinstance(region, PIL.Image.Image), "Critical Error - Region meant to pass as a PIL.Image.Image instance"
     draw = ImageDraw.Draw(region)
     fillcolor = ImageColor.getcolor("lightgreen", "RGB")
     draw.rectangle(trimmed_Rect.get_Tower_Coords(), fillcolor)
@@ -355,7 +355,7 @@ def recolor_check_Rect_Gray(check_Rect, region):
     @param check_Rect: Tower - instance of a Tower class found in superset to compare against
     @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     '''
-    assert isinstance(region, PIL.Image.Image)
+    assert isinstance(region, PIL.Image.Image), "Critical Error - Region meant to pass as a PIL.Image.Image instance"
     draw = ImageDraw.Draw(region)
     fillcolor = ImageColor.getcolor("gray", "RGB")
     draw.rectangle(check_Rect.get_Tower_Coords(), fillcolor)
