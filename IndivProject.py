@@ -14,6 +14,13 @@ Note:
      ImageDraw draws by pixel rather than exact values. In other words - Round down 
      where you think the coordinate is unless it's showing below 0 (another problem with ImageDraw)
      because in that case round up
+     
+**Major Note**:
+    ImageDraw draws the axes upside down on the region. It follows the format of a 2-D array
+    where [0][0] is top left rather than bottom left. This is really confusing to the eyes on
+    which ends are trimmed so it's easier to not output that information to the user and instead
+    just show the trim.
+
 
 Terminology that might be unclear:
     region - its the plot image of size X by Y. Think of it as the background without the rectangles 
@@ -86,18 +93,18 @@ def get_rect(region, X, Y):
     assert isinstance(count, int)
     #plt.figure(2)
     draw = ImageDraw.Draw(region)
-    print "Adding Rectangle"
+    #print "Adding Rectangle"
  
     fillcolor = ImageColor.getcolor("lightgreen", "RGB")
     xzero = rand.randint(0, X-1)
     yzero = rand.randint(0, Y-1)
     xone = rand.randint(xzero+1, X)
     yone = rand.randint(yzero+1, Y)
-    print "Your rectangle coords are ({0},{1}) to ({2},{3})".format(xzero,yzero,xone,yone) 
+    #print "Your rectangle coords are ({0},{1}) to ({2},{3})".format(xzero,yzero,xone,yone) 
     t = Tower.Tower(xzero, yzero,xone,yone)
     if (t.get_Index() == -1):
         t.set_Index(count)
-        print '-----tower index is {0}-----'.format(t.get_Index())
+        #print '-----tower index is {0}-----'.format(t.get_Index())
     count += 1
     draw.rectangle(t.get_Tower_Coords(), fillcolor)
     return t
@@ -113,13 +120,13 @@ def add_Rect_To_Total(rect, region):
     assert isinstance(region, PIL.Image.Image)
     global superset
     assert isinstance(superset, dict)
-    print 'adding rect to superset'
+    #print 'adding rect to superset'
     #plt.figure(num_Figures) #3
     superset[str(rect.get_Index())] = rect
     #print superset
-    fillcolor = ImageColor.getcolor("lightgreen", "RGB")
+    #fillcolor = ImageColor.getcolor("lightgreen", "RGB")
     draw = ImageDraw.Draw(region)
-    draw.rectangle(rect.get_Tower_Coords(), fillcolor)
+    #draw.rectangle(rect.get_Tower_Coords(), fillcolor)
     fillcolor = ImageColor.getcolor("gray", "RGB")
     draw.rectangle(rect.get_Tower_Coords(), fillcolor)
     return
@@ -138,8 +145,8 @@ def trim_Current_Rect(rect, check_Rect, region):
     @return trimmed_Rect: Tower - It's the input rectangle but scaled back along specific edges
     '''
     assert isinstance(region, PIL.Image.Image)
-    print "Trimming a rect"
-    print "index of rectangle violated: {0}".format(check_Rect.get_Index())
+    #print "Trimming a rect"
+    #print "index of rectangle violated: {0}".format(check_Rect.get_Index())
     top_Violated = False
     bot_Violated = False
     left_Violated = False
@@ -172,24 +179,24 @@ def trim_Current_Rect(rect, check_Rect, region):
         vtrim = True
 
     if (vtrim and htrim):
-        print 'vertical trim and horiz trim made'
+        #print 'vertical trim and horiz trim made'
         if (vtrimmed_Rect.get_Tower_Area() >= htrimmed_Rect.get_Tower_Area()):
             trimmed_Rect = vtrimmed_Rect
         else:
             trimmed_Rect = htrimmed_Rect
     elif (vtrim):
-        print 'only vertical trim made'
+        #print 'only vertical trim made'
         trimmed_Rect = vtrimmed_Rect
     elif (htrim):
-        print 'only horiz trim made'
+        #print 'only horiz trim made'
         trimmed_Rect = htrimmed_Rect
     else:
-        print '^^^might be completely encompassed^^^'
-        print 'So turn it into a rect with no length or width'
+        #print '^^^might be completely encompassed^^^'
+        #print 'So turn it into a rect with no length or width'
         trimmed_Rect = Tower.Tower(rect.xone, rect.yone, rect.xone, rect.yone)
         trimmed_Rect.set_Index(vcopy_Rect.get_Index())
         
-    show_Plot(region)
+    #show_Plot(region)
     return trimmed_Rect
 
 
@@ -209,7 +216,7 @@ def trim_Horiz_Overlap(rect, check_Rect, left_Violated, right_Violated):
     
     '''
     assert isinstance(left_Violated, bool) and isinstance(right_Violated, bool)
-    print 'Trimming Horizontally'
+    #print 'Trimming Horizontally'
     if (right_Violated and left_Violated):
         vertical_Delta = rect.yone-rect.yzero
         right_Delta = rect.xone - check_Rect.xone
@@ -223,14 +230,12 @@ def trim_Horiz_Overlap(rect, check_Rect, left_Violated, right_Violated):
             #scale back right
             rect.xone = check_Rect.xzero
     elif (right_Violated):
-        print 'check_Rect violated on the right so scale back rect left'
+        #print 'check_Rect violated on the right so scale back rect left'
         rect.xzero = check_Rect.xone
     elif (left_Violated):
-        print 'check_Rect violated on the left so scale back rect right'
+        #print 'check_Rect violated on the left so scale back rect right'
         rect.xone = check_Rect.xzero
-        
-    
-    return rect#htrim_Area,htrimmed_Rect
+    return rect
 
 def trim_Vertical_Overlap(rect, check_Rect, top_Violated, bot_Violated):
     '''
@@ -257,10 +262,10 @@ def trim_Vertical_Overlap(rect, check_Rect, top_Violated, bot_Violated):
             #scale back top
             rect.yone = check_Rect.yzero 
     elif (top_Violated):
-        print 'check rect has top violated - scale back rect bot'
+        #print 'check rect has top violated - scale back rect bot'
         rect.yzero = check_Rect.yone
     elif (bot_Violated):
-        print 'check rect has bot violated - scale back rect top'
+        #print 'check rect has bot violated - scale back rect top'
         rect.yone = check_Rect.yzero
     return rect
     
@@ -288,8 +293,8 @@ def check_For_Overlap(rect, region):
         index +=1
         if (hoverlaps and voverlaps):
             collisions+=1
-            print "num of collisions detected is now {0}".format(collisions)
-            print "The rectangle is touching the superset"
+            #print "num of collisions detected is now {0}".format(collisions)
+            #print "The rectangle is touching the superset"
             recolor_Rect_White(rect, region)
             rect = trim_Current_Rect(rect, check_Rect, region) #returns trimmed Rect area
             recolor_Trimmed_Rect_Green(rect, region)
@@ -312,27 +317,60 @@ def show_Plot(region):
     
 def recolor_Rect_White(rect, region):
     '''
-    Once rect overlaps check_Rect, whiteout rect, then recolor in the trimmed rect
+    Once a rectangle overlaps check_Rect (the rectangle to check against), whiteout offending rectangle.
+    This is used to draw over the original green rectangle that each new rectangle starts with to match 
+    the background color.
+    
+    @param rect:  Tower - instance of a Tower class
+    @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     '''
-    print 'Whiting out newest rectangle'
+    #print 'Whiting out newest rectangle'
+    assert isinstance(region, PIL.Image.Image)
+    draw = ImageDraw.Draw(region)
+    fillcolor = ImageColor.getcolor("white", "RGB")
+    draw.rectangle(rect.get_Tower_Coords(), fillcolor)
+    #show_Plot(region)
     return
 
 def recolor_Trimmed_Rect_Green(trimmed_Rect, region):
     '''
-    Recolors the trimmed Rect green 
+    Recolors the trimmed rectangle green. 
+    
+    @param trimmed_Rect:  Tower - The trimmed version of the overlapping rectangle
+    @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     '''
-    print 'coloring in trimmed rect'
+    assert isinstance(region, PIL.Image.Image)
+    draw = ImageDraw.Draw(region)
+    fillcolor = ImageColor.getcolor("lightgreen", "RGB")
+    draw.rectangle(trimmed_Rect.get_Tower_Coords(), fillcolor)
+    show_Plot(region)
+    #print 'coloring in trimmed rect'
     return
 
 def recolor_check_Rect_Gray(check_Rect, region):
     '''
-    Recolors the overlapped rect to gray
+    Recolors the overlapped check_Rect (the rectangle to check against) to gray.
+    This is meant to make it look like the superset takes precedence on the region
+    
+    @param check_Rect: Tower - instance of a Tower class found in superset to compare against
+    @param region: PIL.Image.Image - Its a background image based off a length, width and (R,G,B) color pallete (set to white)
     '''
-    print 'coloring in the overlapped rect'
+    assert isinstance(region, PIL.Image.Image)
+    draw = ImageDraw.Draw(region)
+    fillcolor = ImageColor.getcolor("gray", "RGB")
+    draw.rectangle(check_Rect.get_Tower_Coords(), fillcolor)
+    show_Plot(region)
+    #print 'coloring in the overlapped rect'
     return 
 
 if __name__ == "__main__":
     #TODO - remember to add () to end of functions
+    '''
+    Runs the program once. Things to keep in mind: 
+        - Program might hang on first run-through. Why? I don't know but runs 
+        pretty fine each time after I believe
+        - Hit Ctrl+C if it hangs or whatever key binding force stops a running program
+    '''
     X,Y = main()
     global count
     global superset
@@ -345,10 +383,14 @@ if __name__ == "__main__":
     superset = {} #initializes the total claimed area
     region = getRegion(X,Y)
     area_Remaining = X*Y
+    total_Area = X*Y
+    percent_Covered = 0
+    plt.close('all')
+    print "Percentage of region covered: {0}".format(percent_Covered)
     show_Plot(region)
     #start filling with rectangles
     i = 0 #run n times. Less than 10 for DEBUG 
-    while (i<5 and area_Remaining >0):
+    while (area_Remaining >0 and percent_Covered < 75):
         i +=1
         rect = get_rect(region, X, Y)
         # plot of before added to superset
@@ -361,6 +403,9 @@ if __name__ == "__main__":
         show_Plot(region)
         area_Remaining = area_Remaining - rect.get_Tower_Area()
         area_Covered += rect.get_Tower_Area()   
+        percent_Covered = float(float(area_Covered)/float(total_Area))*100
         print 'current number of rectangles: {0}'.format(count)
+        print "Percentage of region covered: {0:.1f}%".format(percent_Covered)
+        print "{0} units of area remaining out of {1}".format(area_Remaining, total_Area)
     
     
